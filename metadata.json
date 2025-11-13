@@ -1,0 +1,5 @@
+{
+  "name": "Trading Platform Interface",
+  "description": "A comprehensive trading platform interface with separate client and admin panels. Clients can trade, manage their balance, and request transactions. Admins can manage users, payment methods, and approve transactions.",
+  "requestFramePermissions": []
+}
