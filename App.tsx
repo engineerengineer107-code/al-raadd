@@ -5,6 +5,24 @@ import ClientDashboard from './components/client/ClientDashboard';
 import AdminDashboard from './components/admin/AdminDashboard';
 import { LogoutIcon, BitcoinLogo } from './components/common/icons';
 
+// PERFORMANCE: Moved NavLink outside of AppContainer to prevent re-declaration on every render.
+const NavLink: React.FC<{
+  active: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}> = ({ active, onClick, children }) => (
+  <button
+    onClick={onClick}
+    className={`px-4 py-2 rounded-md text-sm font-semibold transition-colors duration-200 ${
+      active
+        ? 'bg-gray-900 text-amber-400' // Active state
+        : 'text-gray-300 hover:bg-gray-700 hover:text-white'
+    }`}
+  >
+    {children}
+  </button>
+);
+
 const AppContainer = () => {
   const { user, logout } = useApp();
 
@@ -21,20 +39,6 @@ const AppContainer = () => {
   }, [user]);
 
 
-  // FIX: Switched to React.FC for NavLink component typing to resolve issues with the 'children' prop, aligning with project conventions.
-  const NavLink: React.FC<{ targetView: 'client' | 'admin', children: React.ReactNode }> = ({ targetView, children }) => (
-    <button
-      onClick={() => setView(targetView)}
-      className={`px-4 py-2 rounded-md text-sm font-semibold transition-colors duration-200 ${
-        view === targetView
-          ? 'bg-gray-900 text-amber-400' // Active state
-          : 'text-gray-300 hover:bg-gray-700 hover:text-white'
-      }`}
-    >
-      {children}
-    </button>
-  );
-
   return (
     <div className="flex flex-col h-screen bg-gray-900 text-gray-100">
       <nav className="bg-gray-800 shadow-lg z-10">
@@ -47,8 +51,8 @@ const AppContainer = () => {
               </div>
               <div className="hidden md:block">
                 <div className="ml-10 flex items-baseline space-x-4">
-                  <NavLink targetView="client">لوحة العميل</NavLink>
-                  {user.role === 'admin' && <NavLink targetView="admin">لوحة التحكم</NavLink>}
+                  <NavLink active={view === 'client'} onClick={() => setView('client')}>لوحة العميل</NavLink>
+                  {user.role === 'admin' && <NavLink active={view === 'admin'} onClick={() => setView('admin')}>لوحة التحكم</NavLink>}
                 </div>
               </div>
             </div>

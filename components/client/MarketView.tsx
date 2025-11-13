@@ -4,6 +4,32 @@ import { Asset } from '../../types';
 import Card from '../common/Card';
 import { generateInitialAssets } from '../../data/mockData';
 
+// PERFORMANCE: Moved MarketCard outside of MarketView to prevent re-declaration on every render.
+const MarketCard: React.FC<{ asset: Asset }> = ({ asset }) => (
+  <Card className="flex flex-col justify-between hover:ring-2 hover:ring-amber-500 transition-all duration-200">
+    <div>
+      <div className="flex justify-between items-start">
+        <div>
+          <span className="font-bold text-lg text-white">{asset.symbol}</span>
+          <p className="text-xs text-gray-400">{asset.name}</p>
+        </div>
+        <span className={`font-semibold text-md ${asset.change >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+          {asset.change.toFixed(2)}%
+        </span>
+      </div>
+      <div className="text-2xl font-mono mt-2 text-gray-200">{asset.price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 5})}</div>
+    </div>
+    <div className="h-20 mt-4 -mx-4 -mb-4 sm:-mx-6 sm:-mb-6">
+      <ResponsiveContainer width="100%" height="100%">
+        <LineChart data={asset.history}>
+          <YAxis hide domain={['dataMin', 'dataMax']} />
+          <Line type="monotone" dataKey="price" stroke={asset.change >= 0 ? '#4ade80' : '#f87171'} strokeWidth={2} dot={false} />
+        </LineChart>
+      </ResponsiveContainer>
+    </div>
+  </Card>
+);
+
 const MarketView: React.FC = () => {
   const [assets, setAssets] = useState<Asset[]>(generateInitialAssets());
 
@@ -29,31 +55,6 @@ const MarketView: React.FC = () => {
     const interval = setInterval(updatePrices, 2000);
     return () => clearInterval(interval);
   }, [updatePrices]);
-
-  const MarketCard: React.FC<{ asset: Asset }> = ({ asset }) => (
-    <Card className="flex flex-col justify-between hover:ring-2 hover:ring-amber-500 transition-all duration-200">
-      <div>
-        <div className="flex justify-between items-start">
-          <div>
-            <span className="font-bold text-lg text-white">{asset.symbol}</span>
-            <p className="text-xs text-gray-400">{asset.name}</p>
-          </div>
-          <span className={`font-semibold text-md ${asset.change >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-            {asset.change.toFixed(2)}%
-          </span>
-        </div>
-        <div className="text-2xl font-mono mt-2 text-gray-200">{asset.price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 5})}</div>
-      </div>
-      <div className="h-20 mt-4 -mx-4 -mb-4 sm:-mx-6 sm:-mb-6">
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={asset.history}>
-            <YAxis hide domain={['dataMin', 'dataMax']} />
-            <Line type="monotone" dataKey="price" stroke={asset.change >= 0 ? '#4ade80' : '#f87171'} strokeWidth={2} dot={false} />
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
-    </Card>
-  );
 
   return (
     <div className="space-y-6">

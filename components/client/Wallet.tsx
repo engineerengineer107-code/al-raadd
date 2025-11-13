@@ -3,6 +3,40 @@ import { useApp } from '../../context/AppContext';
 import { Transaction, TransactionStatus, TransactionType } from '../../types';
 import Card from '../common/Card';
 
+// PERFORMANCE: Moved helper function outside of Wallet to prevent re-declaration on every render.
+const getStatusClass = (status: TransactionStatus) => {
+  switch(status) {
+      case TransactionStatus.APPROVED: return 'bg-green-500/20 text-green-400';
+      case TransactionStatus.PENDING: return 'bg-yellow-500/20 text-yellow-400';
+      case TransactionStatus.REJECTED: return 'bg-red-500/20 text-red-400';
+      default: return 'bg-gray-500/20 text-gray-400';
+  }
+}
+
+// PERFORMANCE: Moved TransactionRow outside of Wallet to prevent re-declaration on every render.
+const TransactionRow: React.FC<{ tx: Transaction }> = ({ tx }) => (
+  <tr className="border-b border-gray-700 hover:bg-gray-700/50">
+      <td className="p-3">{new Date(tx.date).toLocaleDateString()}</td>
+      <td className="p-3">{tx.type}</td>
+      <td className="p-3 font-mono">${tx.amount.toFixed(2)}</td>
+      <td className="p-3 hidden sm:table-cell">
+          {tx.type === TransactionType.WITHDRAWAL && tx.withdrawalDetails ? (
+              <>
+                  <span className="font-semibold">{tx.details}</span>
+                  <p className="text-xs text-gray-400 mt-1">إلى: {tx.withdrawalDetails}</p>
+              </>
+          ) : (
+              tx.details
+          )}
+      </td>
+      <td className="p-3">
+          <span className={`px-2 py-1 text-xs font-semibold rounded-full ${getStatusClass(tx.status)}`}>
+              {tx.status}
+          </span>
+      </td>
+  </tr>
+);
+
 const Wallet: React.FC = () => {
   const { user, transactions, paymentMethods, addTransaction } = useApp();
   const [requestType, setRequestType] = useState<'deposit' | 'withdrawal'>('deposit');
@@ -77,38 +111,6 @@ const Wallet: React.FC = () => {
     const fileInput = document.getElementById('proofOfPayment') as HTMLInputElement;
     if(fileInput) fileInput.value = '';
   };
-  
-  const getStatusClass = (status: TransactionStatus) => {
-    switch(status) {
-        case TransactionStatus.APPROVED: return 'bg-green-500/20 text-green-400';
-        case TransactionStatus.PENDING: return 'bg-yellow-500/20 text-yellow-400';
-        case TransactionStatus.REJECTED: return 'bg-red-500/20 text-red-400';
-        default: return 'bg-gray-500/20 text-gray-400';
-    }
-  }
-
-  const TransactionRow: React.FC<{ tx: Transaction }> = ({ tx }) => (
-    <tr className="border-b border-gray-700 hover:bg-gray-700/50">
-        <td className="p-3">{new Date(tx.date).toLocaleDateString()}</td>
-        <td className="p-3">{tx.type}</td>
-        <td className="p-3 font-mono">${tx.amount.toFixed(2)}</td>
-        <td className="p-3 hidden sm:table-cell">
-            {tx.type === TransactionType.WITHDRAWAL && tx.withdrawalDetails ? (
-                <>
-                    <span className="font-semibold">{tx.details}</span>
-                    <p className="text-xs text-gray-400 mt-1">إلى: {tx.withdrawalDetails}</p>
-                </>
-            ) : (
-                tx.details
-            )}
-        </td>
-        <td className="p-3">
-            <span className={`px-2 py-1 text-xs font-semibold rounded-full ${getStatusClass(tx.status)}`}>
-                {tx.status}
-            </span>
-        </td>
-    </tr>
-  );
 
   return (
     <div className="space-y-8">

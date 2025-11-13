@@ -3,6 +3,26 @@ import { useApp } from '../context/AppContext';
 import Card from './common/Card';
 import { CryptoIcon, GoldIcon, OilIcon, RealEstateIcon } from './common/icons';
 
+// PERFORMANCE: Moved TestimonialCard outside of Auth to prevent re-declaration on every render.
+const TestimonialCard: React.FC<{ quote: string; author: string; avatarUrl: string }> = ({ quote, author, avatarUrl }) => (
+    <div className="bg-slate-800/50 p-4 rounded-lg border border-white/10 flex items-center gap-4">
+       <img src={avatarUrl} alt={author} className="w-12 h-12 rounded-full object-cover border-2 border-amber-500/50"/>
+       <div>
+        <p className="text-gray-300 italic">"{quote}"</p>
+        <p className="text-right font-semibold text-amber-400 mt-2">- {author}</p>
+       </div>
+    </div>
+);
+
+// PERFORMANCE: Moved AssetCard outside of Auth to prevent re-declaration on every render.
+const AssetCard: React.FC<{ icon: React.ReactNode; name: string; }> = ({ icon, name }) => (
+    <div className="bg-slate-800/50 p-4 rounded-lg text-center border border-white/10 hover:bg-slate-700/70 hover:border-amber-500 transition-all duration-300 transform hover:-translate-y-1">
+      <div className="flex justify-center items-center h-16 w-16 mx-auto mb-3 bg-slate-700/60 rounded-full">
+        {icon}
+      </div>
+      <h3 className="font-semibold text-white">{name}</h3>
+    </div>
+);
 
 const Auth: React.FC = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -23,25 +43,6 @@ const Auth: React.FC = () => {
       if (!success) setError('هذا البريد الإلكتروني مسجل بالفعل.');
     }
   };
-  
-  const TestimonialCard: React.FC<{ quote: string; author: string; avatarUrl: string }> = ({ quote, author, avatarUrl }) => (
-    <div className="bg-slate-800/50 p-4 rounded-lg border border-white/10 flex items-center gap-4">
-       <img src={avatarUrl} alt={author} className="w-12 h-12 rounded-full object-cover border-2 border-amber-500/50"/>
-       <div>
-        <p className="text-gray-300 italic">"{quote}"</p>
-        <p className="text-right font-semibold text-amber-400 mt-2">- {author}</p>
-       </div>
-    </div>
-  );
-
-  const AssetCard: React.FC<{ icon: React.ReactNode; name: string; }> = ({ icon, name }) => (
-    <div className="bg-slate-800/50 p-4 rounded-lg text-center border border-white/10 hover:bg-slate-700/70 hover:border-amber-500 transition-all duration-300 transform hover:-translate-y-1">
-      <div className="flex justify-center items-center h-16 w-16 mx-auto mb-3 bg-slate-700/60 rounded-full">
-        {icon}
-      </div>
-      <h3 className="font-semibold text-white">{name}</h3>
-    </div>
-  );
 
   return (
     <div 

@@ -7,21 +7,21 @@ import { LogoutIcon, TradingIcon, WalletIcon, MarketIcon } from '../common/icons
 
 type View = 'market' | 'trading' | 'wallet';
 
+// PERFORMANCE: Moved NavItem outside of ClientDashboard to prevent re-declaration on every render.
+const NavItem: React.FC<{ active: boolean; onClick: () => void; children: React.ReactNode }> = ({ active, onClick, children }) => (
+  <button
+    onClick={onClick}
+    className={`flex items-center space-x-3 w-full text-left px-4 py-3 rounded-lg transition-colors duration-200 ${
+      active ? 'bg-amber-500 text-black font-semibold' : 'hover:bg-gray-700 text-gray-300'
+    }`}
+  >
+    {children}
+  </button>
+);
+
 const ClientDashboard: React.FC = () => {
   const [view, setView] = useState<View>('market');
   const { user, logout } = useApp();
-
-  // FIX: Changed component props typing to use React.FC to resolve typing issue with children.
-  const NavItem: React.FC<{ active: boolean; onClick: () => void; children: React.ReactNode }> = ({ active, onClick, children }) => (
-    <button
-      onClick={onClick}
-      className={`flex items-center space-x-3 w-full text-left px-4 py-3 rounded-lg transition-colors duration-200 ${
-        active ? 'bg-amber-500 text-black font-semibold' : 'hover:bg-gray-700 text-gray-300'
-      }`}
-    >
-      {children}
-    </button>
-  );
 
   return (
     <div className="flex h-full bg-gray-900 text-gray-100">

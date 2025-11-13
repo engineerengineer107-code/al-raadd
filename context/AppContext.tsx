@@ -62,6 +62,12 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     localStorage.setItem(LOCAL_STORAGE_KEY, dataToSave);
   }, [users, user, transactions, paymentMethods, contactInfo]);
 
+  /**
+   * Logs a user in by verifying their email and password.
+   * @param email The user's email.
+   * @param pass The user's password.
+   * @returns `true` if login is successful, `false` otherwise.
+   */
   const login = (email: string, pass: string): boolean => {
     const foundUser = users.find(u => u.email === email && u.password === pass);
     if (foundUser) {
@@ -71,6 +77,12 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     return false;
   };
 
+  /**
+   * Registers a new user with the provided email and password.
+   * @param email The new user's email.
+   * @param pass The new user's password.
+   * @returns `true` if registration is successful, `false` if the user already exists.
+   */
   const register = (email: string, pass: string): boolean => {
     if (users.some(u => u.email === email)) {
       return false; // User already exists
@@ -87,10 +99,17 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     return true;
   };
 
+  /**
+   * Logs the current user out.
+   */
   const logout = () => {
     setUser(null);
   };
 
+  /**
+   * Adds a new transaction to the system.
+   * @param tx The transaction object to add, without 'id' and 'date'.
+   */
   const addTransaction = (tx: Omit<Transaction, 'id' | 'date'>) => {
     const newTransaction: Transaction = {
       ...tx,
@@ -100,6 +119,12 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     setTransactions(prev => [newTransaction, ...prev]);
   };
 
+  /**
+   * Updates the status of a transaction (e.g., from PENDING to APPROVED).
+   * If a transaction is approved, the user's balance is updated accordingly.
+   * @param txId The ID of the transaction to update.
+   * @param status The new status for the transaction.
+   */
   const updateTransactionStatus = (txId: string, status: TransactionStatus) => {
     setTransactions(prev =>
       prev.map(tx => {
@@ -114,6 +139,11 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     );
   };
   
+  /**
+   * Updates a user's balance by a given amount. Can be positive or negative.
+   * @param userId The ID of the user whose balance will be updated.
+   * @param amount The amount to add to (or subtract from) the user's balance.
+   */
   const updateUserBalance = (userId: string, amount: number) => {
     setUsers(prev =>
       prev.map(u => (u.id === userId ? { ...u, balance: u.balance + amount } : u))
